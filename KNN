@@ -1,1 +1,44 @@
 
+from numpy import *
+import matplotlib.pyplot as plt
+import operator
+def createDataSet():
+    group=array([[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
+    labels=['A','A','B','B']
+    return group,labels
+def classify0(inX,dataSet,labels,k):
+    #得到数组行数，知道有几组训练数据
+    dataSetSize=dataSet.shape[0] 
+    #测试样本可能是一个数组，而训练样本是四个数组，所以要把它弄成一样的,求差
+    diffMat=tile(inX,(dataSetSize,1))-dataSet
+    sqDiffMat=diffMat**2
+    #每一行相加合并
+    sqDistances=sqDiffMat.sum(axis=1)
+    #开根号
+    distances=sqDistances**0.5
+    #按照行进行索引排序，而不是内容排序
+    sortedDistIndicies=distances.argsort()
+
+    # 2 选择距离最小的k个点
+    classCount={}
+    for i in range(k):
+        #找到这个类型
+        voteIlabel=labels[sortedDistIndicies[i]]
+        #在字典中这个类型+1，get函数返回对应键的值，如果不在，返回0
+        classCount[voteIlabel]=classCount.get(voteIlabel,0)+1
+        # 3 排序并返回出现最多的类型
+    sortedClassCount=sorted(classCount.items(),key=operator.itemgetter(1),reverse=True)
+    return sortedClassCount[0][0]
+    
+group,labels=createDataSet()
+print(classify0([0,0],group,labels,3))
+'''
+group,labels=createDataSet()
+a=[],b=[]
+for x in  group:
+    a.append(x[0])
+for x in  group:
+    b.append(x[1])
+plt.scatter(a,b)
+plt.show()
+'''
